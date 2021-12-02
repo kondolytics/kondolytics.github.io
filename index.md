@@ -9,7 +9,7 @@
 
 ---
 [MLB Payroll and Success Correlation](/pdf/Payroll and Success Correlation Report.pdf)
-<img src="images/dummy_thumbnail.jpg?raw=true"/>
+<img src="images/mariano surrounded by money. .jpeg?raw=true"/>
 
 ---
 [Project 3 Title](http://example.com/)
