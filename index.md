@@ -2,10 +2,10 @@
 
 ---
 
-### Category Name 1 
+### Projects
 
 [Big Data Bowl](/sample_page)
-<img src="images/Pro Headshot.jpg?raw=true"/>
+<img src="images/bigdatabowl.png?raw=true"/>
 
 ---
 [Project 2 Title](/pdf/sample_presentation.pdf)
