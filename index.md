@@ -19,10 +19,10 @@
 
 ### Coursework
 
-- [Problem Set 1](http://example.com/)
-- [Problem Set 2](http://example.com/)
-- [Problem Set 3](http://example.com/)
-- [Problem Set 4](http://example.com/)
+- [Problem Set 1](/coursework/ProblemSet1.html)
+- [Problem Set 2](coursework/ProblemSet2.html)
+- [Problem Set 3](coursework/ProblemSet3.html)
+- [Problem Set 4](coursework/ProblemSet4.html)
 
 ---
 
