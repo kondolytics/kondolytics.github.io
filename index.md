@@ -12,10 +12,6 @@
 <img src="images/MLB money.jpeg?raw=true"/>
 
 ---
-[Problem Set 1](/_layouts/Problemset1.html)
-<img src="images/dummy_thumbnail.jpg?raw=true"/>
-
----
 
 ### Coursework in R
 
@@ -24,12 +20,6 @@
 - [Splitting Data Sets and Linear Regression](coursework/ProblemSet2.html)
 - [Loading files and Basic GGPlot](/coursework/ProblemSet1.html)
 
-
-
 ---
 
-
-
-
----
 
