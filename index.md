@@ -19,10 +19,12 @@
 
 ### Coursework
 
-- [Problem Set 1](/coursework/ProblemSet1.html)
-- [Problem Set 2](coursework/ProblemSet2.html)
-- [Problem Set 3](coursework/ProblemSet3.html)
-- [Problem Set 4](coursework/ProblemSet4.html)
+- [Random Forests and Experiments](coursework/ProblemSet4.html)
+- [Logistic and Regularized Regression](coursework/ProblemSet3.html)
+- [Splitting Data Sets and Linear Regression](coursework/ProblemSet2.html)
+- [Loading files and Basic GGPlot](/coursework/ProblemSet1.html)
+
+
 
 ---
 
