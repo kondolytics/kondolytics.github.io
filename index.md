@@ -8,7 +8,7 @@
 <img src="images/bigdatabowl.png?raw=true"/>
 
 ---
-[Project 2 Title](/pdf/sample_presentation.pdf)
+[MLB Payroll and Success Correlation](/pdf/Payroll and Success Correlation Report.pdf)
 <img src="images/dummy_thumbnail.jpg?raw=true"/>
 
 ---
