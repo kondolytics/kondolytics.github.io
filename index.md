@@ -9,7 +9,7 @@
 
 ---
 [MLB Payroll and Success Correlation](/pdf/Payroll and Success Correlation Report.pdf)
-<img src="images/MLB Money.jpeg?raw=true"/>
+<img src="images/MLB money.jpeg?raw=true"/>
 
 ---
 [Problem Set 1](/_layouts/Problemset1.html)
