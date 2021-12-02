@@ -2,14 +2,14 @@
 
 ---
 
-### Projects
+## Projects
 
 ### [Big Data Bowl](/sample_page)
 <img src="images/bigdatabowl.png?raw=true"/>
 
 ---
-## [MLB Payroll and Success Correlation](/pdf/Payroll and Success Correlation Report.pdf)
-<img src="images/MLB money.jpeg?raw=true"/> (/pdf/Payroll and Success Correlation Report.pdf)
+### [MLB Payroll and Success Correlation](/pdf/Payroll and Success Correlation Report.pdf)
+<img src="images/MLB money.jpeg?raw=true"/>
 
 ---
 [Problem Set 1](/_layouts/Problemset1.html)
