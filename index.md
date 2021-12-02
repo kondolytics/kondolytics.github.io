@@ -12,7 +12,7 @@
 <img src="images/mariano surrounded by money. .jpeg?raw=true"/>
 
 ---
-[Project 3 Title](http://example.com/)
+[Problem Set 1](/_layouts/Problemset1.html)
 <img src="images/dummy_thumbnail.jpg?raw=true"/>
 
 ---
