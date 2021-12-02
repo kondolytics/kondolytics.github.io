@@ -17,7 +17,7 @@
 
 ---
 
-### Coursework
+### Coursework in R
 
 - [Random Forests and Experiments](coursework/ProblemSet4.html)
 - [Logistic and Regularized Regression](coursework/ProblemSet3.html)
