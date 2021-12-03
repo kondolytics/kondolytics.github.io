@@ -11,7 +11,7 @@ Our submission to the 2022 NFL Big Data Bowl will include generating an 'expecte
 
 ---
 
-### [The Competitive Imbalance Problem of Major League Baseball] (/pdf/How to Achieve Economic Equality in Major League Baseball.pdf)
+### [Analyzing Competitive Imbalance Problem in Major League Baseball](/pdf/How to Achieve Economic Equality in Major League Baseball.pdf)
 
 ---
 ### [MLB Payroll and Success Correlation](/pdf/Payroll and Success Correlation Report.pdf)
@@ -21,9 +21,7 @@ In this project I do a brief study on the impact of team payroll on win percenta
 
 ---
 
-
-
-### Coursework in R
+## Coursework in R
 
 - [Random Forests and Experiments](coursework/ProblemSet4.html)
 - [Logistic and Regularized Regression](coursework/ProblemSet3.html)
