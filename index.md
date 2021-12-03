@@ -5,7 +5,7 @@
 ## Projects
 
 ### [Big Data Bowl](/sample_page)
-<img src="images/bigdatabowl.png?raw=true"/>
+<img src="images/Big Data Bowl.jpg?raw=true"/>
 
 Our submission to the 2022 NFL Big Data Bowl will include generating an 'expected return yards' metric from the moment the player catches the ball.  The project takes player tracking data and uses variables such as kick length, hang time, distance, speed, and acceleration of the kickoff team to predict expected yards.  How a returner performs relative to the expected yards will determine how efficient a return is. 
 
