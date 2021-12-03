@@ -18,7 +18,7 @@ This paper aims to identify why Major League Baseball has a competitive imbalanc
 
 ---
 ### [MLB Payroll and Success Correlation](/pdf/Payroll and Success Correlation Report.pdf)
-<img src="images/Payroll vs Success.jpg?raw=true"/>
+<img src="images/payroll_success plot.png?raw=true"/>
 
 In this project I do a brief study on the impact of team payroll on win percentage.  As expected, a higher payroll typically leads to a higher winning percentage. 
 
