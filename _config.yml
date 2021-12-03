@@ -3,7 +3,9 @@ logo: "/images/Pro Headshot Circle.png?raw=true" # your photo (or logo) here
 description: > # your text below (remove <br> elements if you don't need line breaks)
   I am a second year business analytics student focused on Business Analytics and Machine Learning. 
   <br><br>
-  I am a storyteller who can communicate effectively with data scientists and interpret findings to senior management.  I have a strong passion in sports, and currently play infield for Chapman University.
+  I am a storyteller who can communicate effectively with data scientists and interpret findings to senior management.  
+   <br><br>
+  I have a strong passion in sports, and currently play infield for Chapman University.
   <br><br>
   <a href="https://www.linkedin.com/in/nicholaskondo/">View My LinkedIn Profile</a> 
 theme: jekyll-theme-minimal
