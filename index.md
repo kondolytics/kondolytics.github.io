@@ -28,7 +28,7 @@ This paper aims to identify why Major League Baseball has a competitive imbalanc
 ---
 
 ### [Predicting Starting Pitcher's Market Value](/pdf/Predicting MLB Market Price Report.pdf)
-<img src="images/Competitive Imbalance Blowout.jpg?raw=true"/>
+<img src="images/MLB Money?raw=true"/>
 
 ---
 ### [MLB Payroll and Success Correlation](/pdf/Payroll and Success Correlation Report.pdf)
