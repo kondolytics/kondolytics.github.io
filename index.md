@@ -2,6 +2,15 @@
 
 ---
 
+## Coursework in R
+
+- [Random Forests and Experiments](coursework/ProblemSet4.html)
+- [Logistic and Regularized Regression](coursework/ProblemSet3.html)
+- [Splitting Data Sets and Linear Regression](coursework/ProblemSet2.html)
+- [Loading files and Basic GGPlot](/coursework/ProblemSet1.html)
+
+---
+
 ## Projects
 
 ### [Big Data Bowl](/sample_page)
@@ -23,14 +32,3 @@ This paper aims to identify why Major League Baseball has a competitive imbalanc
 In this project I do a brief study on the impact of team payroll on win percentage.  As expected, a higher payroll typically leads to a higher winning percentage. 
 
 ---
-
-## Coursework in R
-
-- [Random Forests and Experiments](coursework/ProblemSet4.html)
-- [Logistic and Regularized Regression](coursework/ProblemSet3.html)
-- [Splitting Data Sets and Linear Regression](coursework/ProblemSet2.html)
-- [Loading files and Basic GGPlot](/coursework/ProblemSet1.html)
-
----
-
-
