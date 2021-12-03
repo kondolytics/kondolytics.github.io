@@ -26,6 +26,11 @@ Our submission to the 2022 NFL Big Data Bowl will include generating an 'expecte
 This paper aims to identify why Major League Baseball has a competitive imbalance and economic inquality issue and how to fix it.  A few potential solutions are identified but the preferred solution is introducing a salary cap.  Although the MLBPA will never agree to this (hence the reason MLB is in the middle of a work stoppage), my paper discusses the implications of a salary cap and what it's implementation would look like.
 
 ---
+
+### [Predicting Starting Pitcher's Market Value](/pdf/Predicting MLB Market Price Report.pdf)
+<img src="images/Competitive Imbalance Blowout.jpg?raw=true"/>
+
+---
 ### [MLB Payroll and Success Correlation](/pdf/Payroll and Success Correlation Report.pdf)
 <img src="images/payroll_success plot.png?raw=true"/>
 
