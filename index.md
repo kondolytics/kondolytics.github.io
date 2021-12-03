@@ -11,7 +11,7 @@ Our submission to the 2022 NFL Big Data Bowl will include generating an 'expecte
 
 ---
 
-### [The Competitive Imbalance Problem of Major League Baseball]
+### [The Competitive Imbalance Problem of Major League Baseball] (/pdf/How to Achieve Economic Equality in Major League Baseball.pdf)
 
 ---
 ### [MLB Payroll and Success Correlation](/pdf/Payroll and Success Correlation Report.pdf)
