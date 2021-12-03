@@ -30,10 +30,12 @@ This paper aims to identify why Major League Baseball has a competitive imbalanc
 ### [Predicting Starting Pitcher's Market Value](/pdf/Predicting MLB Market Price Report.pdf)
 <img src="images/MLB Money.jpg?raw=true"/>
 
+A baseball agent asked me how can we quantify in value/contract projections the premium for pitching at a certain stadium.  After generating a market value on every 2022 free agent starting pitcher, park factors were used and adjusted to the player's market value.  
+
 ---
 ### [MLB Payroll and Success Correlation](/pdf/Payroll and Success Correlation Report.pdf)
 <img src="images/payroll_success plot.png?raw=true"/>
 
-In this project I do a brief study on the impact of team payroll on win percentage.  As expected, a higher payroll typically leads to a higher winning percentage. 
+In this project I do a brief study on the impact of team payroll on win percentage.  As expected, a higher payroll typically leads to a higher winning percentage.   
 
 ---
