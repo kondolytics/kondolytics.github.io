@@ -18,4 +18,5 @@ Check out our progress below
 Working for a professional development soccer team, our goal is to find the best players for the lowest dollars.  Our goal is to identify under-valued players, or players who perform extremely high with a low market price.  We will do this by building a model to see what about performance is correlated with market price?  Is it goals? Assists? Both?  Is there a way for us to create an efficiency metric?
 
 Check out our progress below:
+- [Soccer Model](coursework/Soccer Model 1.html)
 
