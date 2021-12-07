@@ -40,3 +40,5 @@ A baseball agent asked me how can we quantify in value/contract projections the 
 In this project I do a brief study on the impact of team payroll on win percentage.  As expected, a higher payroll typically leads to a higher winning percentage.   
 
 ---
+
+### [Other Projects in Progress](/sample_page.md)
