@@ -14,7 +14,7 @@
 ## Projects
 
 ### [Big Data Bowl (coming soon)](/big-data-bowl.md)
-### [Slide Deck](/pdf/yapr ppt.pdf)
+### [Slide Deck](/pdf/YAPR PPT.pdf)
 ### [Code](/coursework/YAPR.html)
 
 <img src="images/Big Data Bowl.jpg?raw=true"/>
