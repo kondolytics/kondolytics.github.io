@@ -8,7 +8,8 @@ We are currently usign variables such as kick length, location the ball was caug
 
 Check out our progress below 
 
-- [Markdown File](/coursework/YAPR.html)
+- [Code](/coursework/YAPR.html)
+- [Slide Deck](/pdf/YAPR PPT.html)
 - [Big Data Bowl GitHub Repository](https://github.com/kondolytics/BigDataBowl22)
 
 ## Other Projects Currently in Progress
