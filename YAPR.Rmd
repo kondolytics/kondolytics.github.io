@@ -1,0 +1,695 @@
+---
+title: "YAPR"
+author: "Nicholas Kondo, Tino Diaz-Ordaz, Max Batsch"
+subtitle: Yards Above Prediced Return Using Player Tracking Data
+output:
+  html_document:
+    df_print: paged
+    toc: true 
+  html_notebook: default
+---
+
+```{r setup, include= FALSE}
+
+# Please leave this code chunk as is. It makes some slight formatting changes to alter the output to be more aesthetically pleasing. 
+
+library(knitr)
+
+# Change the number in set seed to your own favorite number
+set.seed(4)
+options(width=70)
+options(scipen=99)
+
+
+# this sets text outputted in code chunks to small
+opts_chunk$set(tidy.opts=list(width.wrap=50),tidy=TRUE, size = "vsmall")  
+opts_chunk$set(message = FALSE,                                          
+               warning = FALSE,
+               # "caching" stores objects in code chunks and only rewrites if you change things
+               cache = TRUE, 
+               cache.lazy = FALSE,
+               # automatically downloads dependency files
+               autodep = TRUE,
+               # 
+               cache.comments = FALSE,
+               # 
+               collapse = TRUE,
+               # change fig.width and fig.height to change the code height and width by default
+               fig.width = 5.5,  
+               fig.height = 4.5,
+               fig.align='center')
+```
+
+```{r setup-2, include= FALSE}
+
+# Always print this out before your assignment
+sessionInfo()
+getwd()
+
+```
+
+<!-- ### start answering your problem set here -->
+<!-- You may export your homework in either html or pdf, with the former usually being easier. 
+     To export or compile your Rmd file: click above on 'Knit' then 'Knit to HTML' -->
+<!-- Be sure to submit both your .Rmd file and the compiled .html or .pdf file for full credit -->
+
+```{r setup-3, include= FALSE}
+
+# load all your libraries in this chunk 
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(forcats)
+library(here)
+library(formatR)
+library(readr)
+library(sjPlot)
+library(rsample)
+library(plotROC)
+library(ggplot2)
+library(glmnetUtils)
+library(yardstick)
+library(randomForest)
+library(randomForestExplainer)
+library(ggthemes)
+
+# note, do not run install.packages() inside a code chunk. install them in the console outside of a code chunk. 
+
+```
+
+## Exploring and Cleaning our Data
+
+**Loading the Data**
+```{r}
+PFFScoutingData <- read_csv('/Users/nickkondo/OneDrive - Chapman University/R/NFL/Datasets/PFFScoutingData.csv')
+players <- read_csv('/Users/nickkondo/OneDrive - Chapman University/R/NFL/Datasets/players.csv')
+games <- read_csv('/Users/nickkondo/OneDrive - Chapman University/R/NFL/Datasets/games.csv')
+plays <- read_csv('/Users/nickkondo/OneDrive - Chapman University/R/NFL/Datasets/plays.csv')
+tracking2018 <- read_csv('/Users/nickkondo/OneDrive - Chapman University/R/NFL/Datasets/tracking2018.csv')
+tracking2019 <- read_csv('/Users/nickkondo/OneDrive - Chapman University/R/NFL/Datasets/tracking2019.csv')
+tracking2020 <- read_csv('/Users/nickkondo/OneDrive - Chapman University/R/NFL/Datasets/tracking2020.csv')
+```
+
+**Checking NA Values**
+
+Let's take a look into our data and see how many NA values there are in our data set across variables. 
+``` {r}
+sort(colSums(is.na(tracking2018)))
+```
+
+**Finding the Display Name for with NA Values**
+
+We have 555,537 NA values under a few variables including nflId, jersey number, and position.  nflID is a unique ID for every player in the NFL.  This means that we have a handful of observations where there is no player.  What is accounting for these NA values?
+```{r}
+table(tracking2018[is.na(tracking2018$nflId), "displayName"])
+```
+
+## Filtering Our Data Set 
+There are 555,537 observations where the football is being tracked rather than a player.  To clean up our data set so we only have observations of the players being tracked, let's remove the observations with 'football' as the display name.  We will also use filter so that we are returning only the frames of the 'kickoff' and 'kick_received'.  Now let's see how many NA values we have.  
+
+**2018**
+```{r}
+kick18 <- tracking2018 %>% 
+  # Filtering so the football is removed
+  filter(displayName != "football")
+
+# Filtering so we only see the frames kick received
+kick18 <- kick18 %>% 
+  filter(event == 'kick_received') 
+```
+**2019** 
+```{r}
+kick19 <- tracking2019 %>% 
+  # Filtering so the football is removed
+  filter(displayName != "football") 
+  
+# Filtering so we only see the frames of kick received
+kick19 <- kick19 %>% 
+  filter(event == 'kick_received') 
+```
+**2020**
+```{r}
+kick20 <- tracking2020 %>% 
+# Filtering so the football is removed
+  filter(displayName != "football") 
+
+# Filtering so we only see the frames of kick received
+kick20 <- kick20 %>% 
+  filter(event == 'kick_received') 
+```
+```{r}
+kick <- rbind(kick18, kick19, kick20)
+
+sort(colSums(is.na(kick)))
+
+```
+
+## Joining Tables
+
+**Joining the Tracking, Plays, and PFF Scouting Tables**
+
+The `plays` table and `PFFScouting` table are joined and the filter function is used to return kickoff plays only.  Onside, squib kicks, and punts are removed and stored in an object `kickoffs`.
+```{r}
+# Combining our plays data with our tracking(kick) data
+kick_plays <- inner_join(x = kick,
+                         y = plays, 
+                         by = c('gameId', 'playId'))
+
+# Combining our tracking and plays data with our PFF Scouting Data
+kick_plays_PFF <- inner_join(x = kick_plays, 
+                             y = PFFScoutingData, 
+                             by  = c('gameId', 'playId'))
+
+# Filtering out only the kickoff play type  
+kickoffs <- kick_plays_PFF %>% 
+  filter(specialTeamsPlayType ==  'Kickoff') %>% 
+  # We are going to keep deep, flat, and pooch kicks
+  filter(kickType == 'D' | kickType == 'F' | kickType == 'P')
+
+# Changing the character variables to factors
+kickoffs <- as.data.frame(unclass(kickoffs),                     
+                                  stringsAsFactors = TRUE)
+  
+head(kickoffs)
+
+```
+
+
+### Summary Statistics
+
+**Number of Unique Plays and Games**
+
+How many unique plays and games do we have in our data set now?
+```{r}
+length(unique(kickoffs$playId))
+length(unique(kickoffs$gameId))
+```
+
+**X and Y Dimensions**
+
+What are the dimensions of our X and Y coordinates?
+```{r}
+min(kickoffs$x)
+max(kickoffs$x)
+min(kickoffs$y)
+max(kickoffs$y)
+```
+
+## Feature Engineering
+
+**New Features**
+
+Here we are creating new features and explanation behind why these features were created:
+
+`yard_result`: The yard line the play results in, or the yard line the returner carried the ball to before being tackled.  The yard result is going to be the value that we are aiming to predict. 
+
+`YardResult_Over25`: A binary indicator if the yard resulted in the 25 yard line or more.  The 25 yard line is where the ball is placed if the play result in a touchback.
+
+<blockquote style="font-size:14px">    
+
+We want to make this more actionable and into a simple yes or no decision.  On kickoffs, the returner has the decision to catch the ball and return the kick, or the decision to let the ball land in the end zone and result in a touchback. </p>
+
+A touchback results in the ball being placed at the 25 yard line.  If the returner expects to run the ball beyond the 25 yard line, he should make the decision to return it.  If the returner does not think he can run the ball past the 25 yard line, he should let the ball land in the end zone to receive a touchback (ball placed at 25 yard line).  Some things that influence what yard the returner gets to are how far the kick is (or where the returner catches the ball), the hang time of the kick, how fast the returner is, how far the defenders are, and much more.  To start, let's create a new feature, a binary variable 'did the returner reach beyond the 25 yard line or not.
+
+When a returner sets up to catch a ball, the returner has the decision to take the ball out of the end zone and gain yards, or if the ball lands in the end zone it's ruled as a touchback and the ball is placed at the 25 yard line.  For this reason we will consider returns further than the 25 yard line as a success and returns less than the 25 yard line as a failure.
+
+</blockquote>
+
+`kickto_yardline`  - The yard line the ball was kicked to, or the yard line the player caught(or dropped) the ball.
+
+`Y_position` - The position the field a player is.  We categorize this into 4 locations:
+left = left of the hash 
+right = right of the hash 
+center = in between the hashes 
+out of bounds = not in the boundaries of the field 
+
+ `kickto_5yardBin` - The 5-yard bin that the ball was kicked to.  The yard_result variable is grouped into bin of 5 yards. 
+ 
+ <blockquote style="font-size:14px">    
+
+The exact yard line a returner catches the ball may not be a great predictor of yard line result because if we separate the yard line by each yard, there are too few observations at each level. A new feature that we will create and test is 5-yard bins.  This is more actionable because when a player is looking at the sky catching a ball, he may not know what exact yard line he's standing on, but he will have a good idea of what 5 yard bin he's standing in. 
+
+</blockquote>
+ 
+```{r} 
+kickoffs <- kickoffs %>% 
+         # Creating a variable for what yard line the play resulted at 
+  mutate(yard_result = (100 - yardlineNumber) - playResult,
+         
+         # Creating a binary variable for if the ball reached the 25 yard line or not
+         YardResult_over25 = ifelse(yard_result > 25 | yard_result == 25,'1','0'),
+         
+         # Creating a variable for which yard line the ball was kicked to
+         kickedto_yardline = 100 - (yardlineNumber + kickLength),
+         
+         # Creating a variable for Y position on the field
+         Y_position = ifelse(y < 23.36667 & y > 0, 'left', 
+                      ifelse(y > 29.96667 & y < 53.3333, 'right',
+                      ifelse(y > 23.36667 & y < 53.3333, 'center', 
+                      ifelse(y < 0 | y > 53.3333, "out of bounds", 'NA')))),
+         
+         # Creating a variable for 5-yard bins
+         kickedto_5yardBin =
+           ifelse(kickedto_yardline >= -10 & -5 > kickedto_yardline, "back-half endzone",
+           ifelse(kickedto_yardline >= -5 & 0 > kickedto_yardline, "front-half endzone", 
+           ifelse(kickedto_yardline >= 0 & 5 > kickedto_yardline, "0-5",
+           ifelse(kickedto_yardline >= 5 & 10 > kickedto_yardline, "5-10",
+           ifelse(kickedto_yardline >= 10 & 15 > kickedto_yardline, "10-15", 
+           ifelse(kickedto_yardline >= 15 & 20 > kickedto_yardline, "15-20",
+           ifelse(kickedto_yardline >= 20 & 25 > kickedto_yardline, "20-25",
+           ifelse(kickedto_yardline >= 25 & 30 > kickedto_yardline, "25-30",
+           ifelse(kickedto_yardline >= 30 & 35 > kickedto_yardline, "30-35",
+           ifelse(kickedto_yardline >= 35 & 40 > kickedto_yardline, "35-40",
+           ifelse(kickedto_yardline >= 40 & 45 > kickedto_yardline, "40-45",
+           ifelse(kickedto_yardline >= 45 & 50 > kickedto_yardline, "45-50",
+           ifelse(kickedto_yardline >= 50 & 55 > kickedto_yardline, "50-55",
+           ifelse(kickedto_yardline >= 55 & 60 > kickedto_yardline, "55-60",
+           ifelse(kickedto_yardline >= 60 & 65 > kickedto_yardline, "60-65","NA")
+           )))))))))))))))
+
+# Changing variables to factors
+kickoffs <- as.data.frame(unclass(kickoffs),                     
+                                  stringsAsFactors = TRUE)
+
+head(kickoffs)
+
+```
+
+**Releveling Factor Variables**
+
+Re leveling the `kickedto_5yardBin` so they are in proper order.  
+```{r}
+
+# Releveling the 5-Yard bins 
+kickoffs <- kickoffs %>% 
+  mutate(kickedto_5yardBin = fct_relevel(kickedto_5yardBin, "back-half endzone", "front-half endzone", "0-5", "5-10", "10-15", "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50", "50-55", "55-60"))
+
+levels(kickoffs$kickedto_5yardBin)
+```
+
+**Creating a Table for Returns Only**
+
+We only want to use the plays where the returner made the decision to return it.  `Downed`, `Fair  Catch`, `Out of Bounds`, and `Touchback` don't have any outcome to evaluate.  `Muffed` means the player did not catch it cleanly but the player still returned the ball so we will leave that variable in.
+
+```{r} 
+table(kickoffs$specialTeamsResult)
+
+returns <- kickoffs %>% 
+  filter(specialTeamsResult  == 'Return' | specialTeamsResult ==  'Muffed')
+
+table(returns$specialTeamsResult)
+```
+
+### Summary Statistics
+
+For every single kickoff, the ball is usually kicked to the -1.189 yard line.  Which is approximately one yard into the end zone.
+
+For every single kickoff return  (excludes touchbacks), the average yard result was 25.84, slightly above where the ball would be placed if the play resulted in a touchback.  
+```{r}
+
+summary(kickoffs$kickedto_yardline)
+
+summary(returns$yard_result)
+
+```
+
+Here is the variable 5 yard bin kicked to compared to the yard result.  We can see that where the ball is kicked is correlated in some way with the yard result.  This aligns with our hypothesis that the further the ball is kicked, the smaller the yard line the player will likely end up.  One thing to notice is when the ball is kicked in the back of the end zone, the highest yard line a returner ran to was the 50 yard line. (100 = score) 
+```{r}
+
+ggplot(returns, aes(x = kickedto_5yardBin, y = yard_result)) +
+  geom_boxplot() +
+  coord_flip()  +
+  xlab('5-Yard Bin Kicked To') +
+  ylab('Yard Result') + 
+  theme(axis.text=element_text(size=14),
+        axis.title = element_text(size=14))
+
+```
+
+
+
+
+### Creating Defenders (Kickoff Team) and Defender Variables
+
+The data set is expanded so that for every player or `displayName`, there are 11 observations, where 11 defenders and their location, distance, speed, acceleration, and more variables are included.  We slice our data to return the 10 closest defenders because these are the players running down the field while the kicker usually lags behind.  
+
+```{r}
+# Creating a new variable Opposing team because we eventually want to find the distance from the opposing players, not team players
+
+# If a player is on the away team, lets return the home team, else, let's return away
+returns$opp_team <- ifelse(returns$team == 'away', 'home', 'away')
+
+# Sanity check
+table(returns$opp_team == returns$team)
+
+# Creating a data set for the moment of the ball being caught
+received <- returns %>% 
+  filter(event == 'kick_received')
+
+# Joining returns2 onto itself where team = opp_team and creating 11 rows for each player with a defender added
+
+receivedJoin <- left_join(received,
+                     received[, c("gameId", "playId", "nflId", "displayName",                                             "opp_team", "x","y","s", "a", "dis")],
+                     by = c("gameId" = "gameId", "playId" = "playId", "team" =                                      "opp_team"))
+
+# Creating a variable for distance from returner or 'ball carrier'
+receivedJoin$distance <- (((receivedJoin$x.x - receivedJoin$x.y)^2) + 
+                       (receivedJoin$y.x - receivedJoin$y.y)^2)^.5
+
+# Using filter to return the only the returner 
+receivedJoin <- receivedJoin  %>% 
+  filter(receivedJoin$nflId.x == receivedJoin$returnerId) 
+  
+
+# We are grabbing the 10 closest defenders because the kicker should be removed from the play when evaluating the kickoff team
+
+# Average Yardline
+# Average 
+received10 <- receivedJoin %>% group_by(displayName.x, gameId, playId) %>% slice_min(distance, n = 10) %>% 
+  # Creating average distance, speed, and acceleration variables
+  mutate(KoTeamAvgX = mean(x.x),
+         KoTeamAvgDist  = mean(distance),
+         KoTeamAvgSpeed  = mean(s.y),
+         KoTeamAvgA = mean(a.y))
+
+head(received10)
+
+```
+
+**Selecting Relevant Variables**
+
+Let's roll this data back up and selecting only the variables that we want.   
+```{r}
+clean <- received10 %>% 
+  select(time, x.x, y.x, event, displayName.x, nflId.x, returnerId, position, gameId, 
+         playId, frameId, playDescription, kickReturnYardage, yard_result,
+         YardResult_over25,kickedto_yardline, kickedto_5yardBin, Y_position, KoTeamAvgX,
+         KoTeamAvgDist,KoTeamAvgSpeed, KoTeamAvgA, specialTeamsPlayType, 
+         specialTeamsResult, kickType, hangTime, kickDirectionIntended,  
+         kickDirectionActual, returnDirectionIntended, returnDirectionActual, 
+         kickoffReturnFormation) 
+
+df <- unique(clean)
+```
+
+## Visualizations
+
+### Histograms
+
+**Frequency of 5-Yard Bins the Ball is Returned From**
+Here is the frequency of balls returned.  Take a look at the `back-half endzone`, despite the most balls kicked here, players rarely return this ball.  This is because the players would rather take a touchback (ball placed at 25 yard line) rather than returning the ball from the back half of the endzone.  
+
+```{r}
+ggplot(returns, aes(x = kickedto_5yardBin)) +
+  geom_histogram(stat = "count", fill = "coral") + 
+  coord_flip() + 
+  xlab('5-Yard Bin Kicked To') +
+  ylab('frequency') + 
+  theme(axis.text=element_text(size=16),
+        axis.title = element_text(size=16)) +
+  ggtitle("5-Yard Bins (Returns Only)")
+```
+
+### Scatter Plots
+Let's take a look at some scatter plots of our variables. 
+```{r}
+ggplot(data = df, aes(x = kickedto_yardline, y = kickReturnYardage, color = kickedto_yardline, alpha = 1/density)) + 
+  geom_point(shape = 16, size = 5, show.legend = FALSE, alpha = .15) + 
+  theme_excel(base_size = ) +
+  labs( x = 'Yard Line Kicked To', y = 'Kick Return Yardage') +
+  scale_color_gradient(low = "#0091ff", high = "#f0650e") +
+  scale_alpha(range = c(.05, .25)) + 
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=16,face="bold"))
+
+ggplot(data = df, aes(x = KoTeamAvgDist, y = kickReturnYardage, color = KoTeamAvgDist)) + 
+  geom_point(shape = 16, size = 5, show.legend = FALSE) +
+  theme_excel(base_size = 16) + 
+  labs( x = 'Avg Distance of Defenders', y = 'Kick Return Yardage') +
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=16,face="bold"))
+  
+ggplot(data = df, aes(x = KoTeamAvgSpeed, y = kickReturnYardage, color = KoTeamAvgSpeed)) + 
+  geom_point(shape = 16, size = 5, show.legend = FALSE) +
+  theme_excel(base_size = 16) +
+  labs( x = 'Avg Speed of Defenders', y = 'Kick Return Yardage') +
+  scale_color_gradient(low = "#32aeff", high = "#f2aeff") +
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=16,face="bold"))
+  
+ggplot(data = df, aes(x = KoTeamAvgA, y = kickReturnYardage, color = KoTeamAvgA)) + 
+  geom_point(shape = 16, size = 5, show.legend = FALSE) +
+  theme_excel(base_size = 16) +
+  labs( x = 'Avg Speed^2 of Defenders', y = 'Kick Return Yardage') +
+  scale_color_gradient(low = "#32aeff", high = "#f2aeff") +
+  theme(axis.text=element_text(size=14),
+        axis.title=element_text(size=16,face="bold"))
+```
+
+
+## Building a Linear Model
+```{r}
+mod1 <- lm(kickReturnYardage ~ kickedto_yardline + KoTeamAvgDist + KoTeamAvgA + Y_position + kickType + specialTeamsResult,
+           data = df)
+
+tab_model(mod1)
+```
+
+**Generating Predictions**
+```{r}
+# Creating a split with 75% of the data in the training set
+df_split <- initial_split(df, prop = .75)
+df_train <- training(df_split)
+df_test <- testing(df_split)
+
+mod2 <- lm(kickReturnYardage ~ kickedto_yardline + KoTeamAvgDist + Y_position + kickType + specialTeamsResult,
+data  = df)
+
+# Generating in-sample (training) predictions
+preds_test <- predict(mod2, newdata = df_test)
+
+# Generating out-of-sample (testing) predictions
+preds_train <- predict(mod2, newdata = df_train)
+
+# Mean Squared Error
+get_rmse <- function(true, predictions){
+  sqrt(mean((true - predictions)^2))
+}
+
+get_rmse(df_train$yard_result, preds_train)
+get_rmse(df_test$yard_result, preds_test)
+
+# Test Error > Training Error means model is overfit 
+# Test Error < Training Error means model is underfit
+# We want test error to ~ training 
+
+```
+
+## Logistic Regression
+```{r}
+logit <- glm(YardResult_over25 ~ kickedto_yardline + hangTime + specialTeamsResult + KoTeamAvgDist + KoTeamAvgSpeed, 
+           family = binomial,
+           data = df)
+
+summary(logit)
+exp(logit$coefficients)
+
+```
+
+**Generating Logistic Predictions**
+Generating predicted probabilities for the test and training sets
+```{r}
+preds_trainLogit <- predict(logit, newdata = df_train)
+
+preds_testLogit <- predict(logit, newdata = df_test)
+
+head(preds_testLogit)
+head(preds_trainLogit)
+```
+
+**Generating Results Data Frames**
+```{r}
+results_train <- data.frame( `truth`= df_train %>% 
+                               select(YardResult_over25) %>% 
+                               mutate(YardResult_over25 = as.numeric(YardResult_over25)),
+                               `Class1` =  preds_trainLogit,
+                               `type` = rep("train", length(preds_trainLogit))
+)
+
+results_test <- data.frame(
+    `truth` = df_test %>% 
+    select(YardResult_over25) %>% 
+    mutate(YardResult_over25 = as.numeric(YardResult_over25)),
+    `Class1` =  preds_testLogit,
+    `type` = rep("test",length(preds_testLogit))
+)
+
+results <- bind_rows(results_train, results_test)
+
+slice(results)
+
+```
+
+**Generating ROC Plots**
+
+One each for the test and training sets.  Be sure to label the cutoff probabilities along the ROC lines using the cutoffs at 
+```{r}
+p_train <- ggplot(results_train,
+            aes(m=Class1, d = truth.YardResult_over25)) +
+    geom_roc(labelsize = 3.5, 
+             cutoffs.at = c(0.99,0.9,0.7,0.5,0.3,0.1,0)) +
+  theme_minimal(base_size = 16)
+
+p_test <- ggplot(results_test,
+            aes(m=Class1, d = truth.YardResult_over25)) +
+    geom_roc(labelsize = 3.5, 
+             cutoffs.at = c(0.99,0.9,0.7,0.5,0.3,0.1,0)) +
+  theme_minimal(base_size = 16)
+
+print(p_train)
+print(p_test)
+
+```
+
+**Calculating AUC**
+
+Calculating the AUC for the test and training sets using the functions calc_auc
+```{r}
+calc_auc(p_train)
+calc_auc(p_test) 
+```
+
+## Elastic Net Model
+
+```{r}
+enet_mod <- cva.glmnet(kickReturnYardage ~ kickedto_yardline + KoTeamAvgDist + KoTeamAvgA + Y_position + kickType + specialTeamsResult,
+     data = df,
+     alpha = seq(0,1, by = 0.05))
+plot(enet_mod)
+```
+
+```{r}
+enet_mod <- cva.glmnet(kickReturnYardage ~ kickedto_yardline + KoTeamAvgDist + KoTeamAvgA + Y_position + kickType + specialTeamsResult,
+     data = df_train,
+     alpha = seq(0,1, by = 0.05))
+
+plot(enet_mod)
+```
+
+```{r}
+# now enet_mod holds a list with all of the sub models,
+# each with alpha = whatever sequence the model was estimated with
+minlossplot(enet_mod,
+            cv.type = "min")
+```
+
+```{r}
+# Use this function to find the best alpha
+get_alpha <- function(fit) {
+  alpha <- fit$alpha
+  error <- sapply(fit$modlist,
+                  function(mod) {min(mod$cvm)})
+  alpha[which.min(error)]
+}
+```
+
+```{r}
+# Get all parameters.
+get_model_params <- function(fit) {
+  alpha <- fit$alpha
+  lambdaMin <- sapply(fit$modlist, `[[`, "lambda.min")
+  lambdaSE <- sapply(fit$modlist, `[[`, "lambda.1se")
+  error <- sapply(fit$modlist, function(mod) {min(mod$cvm)})
+  best <- which.min(error)
+  data.frame(alpha = alpha[best], lambdaMin = lambdaMin[best],
+             lambdaSE = lambdaSE[best], eror = error[best])
+}
+```
+
+```{r}
+# extract the best alpha value and model parameters
+best_alpha <- get_alpha(enet_mod)
+print(best_alpha)
+get_model_params(enet_mod)
+# extract the best model object
+best_mod <- enet_mod$modlist[[which(enet_mod$alpha == best_alpha)]]
+print(best_mod)
+```
+
+```{r}
+summary(enet_mod)
+```
+
+```{r}
+# Also heres the code for the plot I put in the slides
+g <- ggplot(returns, aes(x = kickedto_5yardBin, y = yard_result, color = kickedto_5yardBin)) +
+     labs(x = '5-Yard Bin Kicked To', y = 'Yard Result')
+
+#Since Boxplots are boring, I made a violin plot instead
+g + geom_violin(aes(fill = kickedto_5yardBin), size = 1, alpha = .5) +
+  geom_boxplot(outlier.alpha = 0, coef = 0,
+  color = "gray40", width = .2) +
+  scale_fill_brewer(palette = "Dark2", guide = "none") +
+  coord_flip()
+```
+
+## Random Forest
+
+```{r}
+NFL_rf_fit2 <- randomForest(YardResult_over25 ~ kickedto_yardline + hangTime + kickoffReturnFormation + Y_position + KoTeamAvgDist + KoTeamAvgSpeed,
+                           data = df,
+                           type = classification,
+                           mtry = 4,
+                           na.action = na.roughfix,
+                           ntree = 1500,
+                           localImp =TRUE) 
+
+
+print(NFL_rf_fit2)
+```
+
+```{r}
+plot(NFL_rf_fit2)
+```
+
+**Generating Test Predictions**
+
+```{r}
+rf_mods <- list()
+oob_err <- NULL
+test_err <- NULL
+for(mtry in 1:9){
+  NFL_rf_fit2 <- randomForest(YardResult_over25 ~ kickedto_yardline + hangTime + kickoffReturnFormation + Y_position + KoTeamAvgDist + KoTeamAvgSpeed,
+                         data = df,
+                         mtry = mtry,
+                         na.action = na.roughfix,
+                         ntree = 500)
+  oob_err[mtry] <- NFL_rf_fit2$err.rate[500]
+  
+  cat(mtry," ")
+}
+## 1  2  3  4  5  6  7  8  9
+
+results_DF <- data.frame(mtry = 1:9, oob_err)
+ggplot(results_DF, aes(x = mtry, y = oob_err)) + geom_point() + theme_minimal() + xlim(1,9)
+```
+
+```{r}
+varImpPlot(NFL_rf_fit2)
+```
+
+```{r}
+plot_min_depth_distribution(NFL_rf_fit2)
+```
+```{r}
+plot_multi_way_importance(NFL_rf_fit2)
+```
+
+-------
+
+Next Next Steps: 
+
+Blockers and Shapley values
+
+Nueral Networks using s, a, dir, x, and y?
+- Last years expected rushing yards model used just those variables for all 22 players on the field 
