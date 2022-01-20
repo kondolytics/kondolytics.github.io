@@ -7,7 +7,7 @@
         <div class="row">
           <div class="col-50">
             <h3>Billing Address</h3>
-            <label for="fname"><i class="fa fa-user"></i> Full Name</label>
+            <label for="fname"><i class="fa fa-user"></i> Full Test</label>
             <input type="text" id="fname" name="firstname" placeholder="John M. Doe">
             <br>
             
