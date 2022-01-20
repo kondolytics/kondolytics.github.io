@@ -15,14 +15,11 @@
             <input type="text" id="email" name="email" placeholder="john@example.com">
             <br>
             
-            <label for="adr"><i class="fa fa-address-card-o"></i> Address</label>
-            <br>
-            
+            <label for="adr"><i class="fa fa-address-card-o"></i> Address</label>  
             <input type="text" id="adr" name="address" placeholder="542 W. 15th Street">
             <br>
             
             <label for="city"><i class="fa fa-institution"></i> City</label>
-            <br>
             <input type="text" id="city" name="city" placeholder="New York">
             <br>
 
