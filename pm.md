@@ -14,7 +14,7 @@
             <label for="email"><i class="fa fa-envelope"></i> Email</label>
             <input type="text" id="email" name="email" placeholder="elon@example.com">
             <br>
-            
+              <br>
             <label for="adr"><i class="fa fa-address-card-o"></i> Address</label>  
             <input type="text" id="adr" name="address" placeholder="123 Rainbow Road">
             <br>
