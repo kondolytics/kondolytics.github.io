@@ -37,6 +37,7 @@
             </div>
           </div>
           <div class="col-50">
+             <br>
             <h3>Payment</h3>
             <label for="cname">Name on Card</label>
             <input type="text" id="cname" name="cardname" placeholder="Elon Musk">
