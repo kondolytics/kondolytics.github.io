@@ -2,22 +2,29 @@
   <div class="col-75">
     <div class="container">
       <form method="post" action="https://forms.un-static.com/forms/966bf35c42e0367eb00bbefc0b42cebd25978d38">
+        <br>
 
         <div class="row">
           <div class="col-50">
             <h3>Billing Address</h3>
             <label for="fname"><i class="fa fa-user"></i> Full Name</label>
             <input type="text" id="fname" name="firstname" placeholder="John M. Doe">
+            <br>
             
             <label for="email"><i class="fa fa-envelope"></i> Email</label>
             <input type="text" id="email" name="email" placeholder="john@example.com">
+            <br>
             
             <label for="adr"><i class="fa fa-address-card-o"></i> Address</label>
+            <br>
             
             <input type="text" id="adr" name="address" placeholder="542 W. 15th Street">
+            <br>
             
             <label for="city"><i class="fa fa-institution"></i> City</label>
+            <br>
             <input type="text" id="city" name="city" placeholder="New York">
+            <br>
 
             <div class="row">
               <div class="col-50">
