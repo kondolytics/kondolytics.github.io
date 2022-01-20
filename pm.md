@@ -5,7 +5,7 @@
 
   <body>
     <!-- Include the PayPal JavaScript SDK; replace "test" with your own sandbox Business account app client ID -->
-    <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD"></script>
+    <script src="AcW1-jhAlgNG92tBvTrhIwzleTVrSnFRj7tYp2XWkwTMExENjarjBIq7wL65gnR3qqAMSRfYDP84y2DX"></script>
 
     <!-- Set up a container element for the button -->
     <div id="paypal-button-container"></div>
