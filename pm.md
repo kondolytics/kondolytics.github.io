@@ -1,7 +1,7 @@
 <div class="row">
   <div class="col-75">
     <div class="container">
-      <form action="/action_page.php">
+      <form method="post" action="https://forms.un-static.com/forms/966bf35c42e0367eb00bbefc0b42cebd25978d38">
 
         <div class="row">
           <div class="col-50">
