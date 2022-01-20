@@ -27,6 +27,8 @@
               <div class="col-50">
                 <label for="state">State</label>
                 <input type="text" id="state" name="state" placeholder="NY">
+                <br>
+                 <br>
               </div>
               <div class="col-50">
                 <label for="zip">Zip</label>
@@ -37,8 +39,6 @@
             </div>
           </div>
           <div class="col-50">
-             <br>
-              <br>
             <h3>Payment</h3>
             <label for="cname">Name on Card</label>
             <input type="text" id="cname" name="cardname" placeholder="Elon Musk">
@@ -56,6 +56,8 @@
               <div class="col-50">
                 <label for="expyear">Exp Year</label>
                 <input type="text" id="expyear" name="expyear" placeholder="2028">
+                <br>
+                  <br>
               </div>
               <div class="col-50">
                 <label for="cvv">CVV</label>
